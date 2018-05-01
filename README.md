@@ -8,13 +8,13 @@ Change credentials in `config/db.config.php`
 
 ### Get a List of Articles
 ```
-curl -X GET articles.php
-curl -X GET articles.php?categoryId=123
-curl -X GET articles.php?authorId=123
-curl -X GET articles.php?categoryId=123&authorId=123
+curl -X GET http://localhost/articles
+curl -X GET http://localhost/articles?categoryId=123
+curl -X GET http://localhost/articles?authorId=123
+curl -X GET http://localhost/articles?categoryId=123&authorId=123
 ```
 
 ### Get a Detail of an Article
 ```
-curl -X GET articles.php?id=123
+curl -X GET http://localhost/articles/123
 ```
