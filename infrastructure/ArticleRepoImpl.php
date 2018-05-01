@@ -15,10 +15,10 @@ class ArticleRepoImpl implements ArticleRepo {
     }
     
     function fetchAll($categoryId = null, $authorId = null, $start = 0, $limit = 10) {   
-        $q = "SELECT a.id, a.title, a.body summary, ac.categoryId, au.authorId, au.realname authorName, au.email authorEmail
-                FROM " . $this->articles_table . " a
-                    LEFT JOIN " . $this->articles_categories_table . " ac ON a.id = ac.entryid
-                    LEFT JOIN " . $this->authors_table . " au ON a.authorid = au.authorid
+        $q = "SELECT a.id, a.title, a.body summary, a.timestamp, ac.categoryId, au.authorId, au.realname authorName, au.email authorEmail
+                FROM {$this->articles_table} a
+                    LEFT JOIN {$this->articles_categories_table} ac ON a.id = ac.entryid
+                    LEFT JOIN {$this->authors_table} au ON a.authorid = au.authorid
                 WHERE 1=1 ";
                 
         $params = array('start' => (int)$start, 'limit' => (int)$limit);
@@ -51,7 +51,7 @@ class ArticleRepoImpl implements ArticleRepo {
           $article->id = (int)$row['id'];
           $article->title = $row['title'];
           $article->summary = $row['summary'];
-          $article->text = '';
+          $article->timestamp = $row['timestamp'];
           $article->categoryId = (int)$row['categoryId'];
           
           $article->author = new ArticleAuthor();
@@ -66,10 +66,10 @@ class ArticleRepoImpl implements ArticleRepo {
     }
     
     public function fetchOne($articleId) {
-        $q = "SELECT a.id, a.title, a.body summary, a.extended text, ac.categoryId, au.authorId, au.realname authorName, au.email authorEmail
-                FROM " . $this->articles_table . " a
-                    LEFT JOIN " . $this->articles_categories_table . " ac ON a.id = ac.entryid
-                    LEFT JOIN " . $this->authors_table . " au ON a.authorid = au.authorid
+        $q = "SELECT a.id, a.title, a.body summary, a.extended text, a.timestamp, ac.categoryId, au.authorId, au.realname authorName, au.email authorEmail
+                FROM {$this->articles_table} a
+                    LEFT JOIN {$this->articles_categories_table} ac ON a.id = ac.entryid
+                    LEFT JOIN {$this->authors_table} au ON a.authorid = au.authorid
                 WHERE a.id = :id ";
                         
         $stmt = $this->conn->prepare($q);        
@@ -85,6 +85,7 @@ class ArticleRepoImpl implements ArticleRepo {
           $article->title = $row['title'];
           $article->summary = $row['summary'];
           $article->text = $row['text'];
+          $article->timestamp = $row['timestamp'];
           $article->categoryId = (int)$row['categoryId'];
           
           $article->author = new ArticleAuthor();

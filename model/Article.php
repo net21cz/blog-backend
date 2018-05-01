@@ -5,6 +5,7 @@ class Article {
     public $title;
     public $summary;
     public $text;
+    public $timestamp;
     
     public $categoryId;
     
