@@ -66,7 +66,7 @@ class ArticleRepoImpl implements ArticleRepo {
     }
     
     public function fetchOne($articleId) {
-        $q = "SELECT a.id, a.title, a.body summary, ac.categoryId, au.authorId, au.realname authorName, au.email authorEmail
+        $q = "SELECT a.id, a.title, a.body summary, a.extended text, ac.categoryId, au.authorId, au.realname authorName, au.email authorEmail
                 FROM " . $this->articles_table . " a
                     LEFT JOIN " . $this->articles_categories_table . " ac ON a.id = ac.entryid
                     LEFT JOIN " . $this->authors_table . " au ON a.authorid = au.authorid
@@ -84,7 +84,7 @@ class ArticleRepoImpl implements ArticleRepo {
           $article->id = (int)$row['id'];
           $article->title = $row['title'];
           $article->summary = $row['summary'];
-          $article->text = '';
+          $article->text = $row['text'];
           $article->categoryId = (int)$row['categoryId'];
           
           $article->author = new ArticleAuthor();
