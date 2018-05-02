@@ -1,8 +1,8 @@
 <?php
-include_once 'model/Article.php';
-include_once 'model/ArticleRepo.php';
+include_once 'domain/Article.php';
+include_once 'domain/ArticleRepo.php';
 
-class ArticleRepoImpl implements ArticleRepo {
+class ArticleRepoPDO implements ArticleRepo {
  
     private $conn;
     
@@ -10,7 +10,7 @@ class ArticleRepoImpl implements ArticleRepo {
     private $articles_categories_table = "serendipity_entrycat";
     private $authors_table = "serendipity_authors";
   
-    public function __construct($conn){
+    public function __construct(PDO $conn){
         $this->conn = $conn;
     }
     
