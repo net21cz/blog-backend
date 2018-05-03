@@ -26,7 +26,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
       $response = $controller->listRequest($_GET);
     }
     break;                           
-        
+  
+  case 'OPTIONS':
+    header('Allow: GET OPTIONS');
+    break;
+          
   default:
     throw new Exception('HTTP method not supported: ' . $_SERVER['REQUEST_METHOD']);
 }    
