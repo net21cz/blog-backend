@@ -1,27 +1,38 @@
 <?php
-namespace articles;
+namespace blog;
 
 require_once __DIR__ . '/../domain/CategoryRepo.php';
 require_once __DIR__ . '/../domain/OptionsRepo.php';
+require_once __DIR__ . '/BlogInfoDTO.php';
 
-class ArticleController {
+class IndexController {
 
-  private $repo;
+  private $categoryRepo;
+  private $optionsRepo;
 
   public function __construct(CategoryRepo $categoryRepo, OptionsRepo $optionsRepo){                                           
-    $this->repo = $repo;
+    $this->categoryRepo = $categoryRepo;
+    $this->optionsRepo = $optionsRepo;
   }
   
-  public function indexRequest() {
-    $limit = 10;
+  public function blogInfoRequest() {
+    $options = $this->optionsRepo->fetchAll(array('blogTitle', 'blogDescription'));
+    $categories = $this->categoryRepo->fetchAll();
     
-    $categoryId = $this->getIfSet($params, 'categoryId');   
-    $authorId = $this->getIfSet($params, 'authorId');   
-    $page = $this->getIfSet($params, 'page', 0);
+    $categoriesDto = array();
     
-    $articles = $this->repo->fetchAll((int)$categoryId, (int)$authorId, $page * $limit, $limit);
-    
-    return $articles;
+    foreach ($categories as $c) {
+      $categoriesDto[] = new CategoryDTO(
+        $c->id,
+        $c-name
+      );
+    }
+        
+    return new BlogInfoDTO(
+      $options['blogTitle']->value,
+      $options['blogDescription']->value,
+      $categoriesDto
+    );
   }
   
   private function getIfSet($params, $var, $def = null) {

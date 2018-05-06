@@ -1,5 +1,5 @@
 <?php
-namespace articles;
+namespace db;
 
 require_once __DIR__ . '/DatabaseMySql.php';
 

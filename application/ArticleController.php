@@ -1,5 +1,5 @@
 <?php
-namespace articles;
+namespace blog\articles;
 
 require_once __DIR__ . '/../domain/ArticleRepo.php';
 

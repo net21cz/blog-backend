@@ -1,5 +1,5 @@
 <?php
-namespace articles;
+namespace blog\articles;
 
 use \PDO;
 
