@@ -6,7 +6,7 @@ class Article {
     public $id;
     public $title;
     public $summary;
-    public $text;
+    public $body;
     public $timestamp;
     
     public $categoryId;

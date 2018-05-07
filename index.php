@@ -38,22 +38,22 @@ function view($bloginfo) {
   $view = array(
     'version' => '1.0',
     'href' => $_SERVER['REQUEST_URI'],
-    'title' => $bloginfo->title(),
-    'description' => $bloginfo->description(),
+    'title' => $bloginfo->title,
+    'description' => $bloginfo->description,
     'categories' => array(),
     'links' => array()
   );
   
-  foreach ($bloginfo->categories() as $c) {
+  foreach ($bloginfo->categories as $c) {
     $view['categories'][] = array(
-      'title' => $c->name(),
-      'href' => $_SERVER['REQUEST_URI'] . '/articles?categoryId=' . $c->id()
+      'title' => $c->name,
+      'href' => $_SERVER['REQUEST_URI'] . 'articles?categoryId=' . $c->id
     );
   }
   
   $view['links'][] = array(
     'rel' => 'articles',
-    'href' => '/api/articles'
+    'href' => $_SERVER['REQUEST_URI'] . 'articles'
   ); 
   
   echo json_encode($view);

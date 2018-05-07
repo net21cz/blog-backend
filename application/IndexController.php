@@ -3,7 +3,7 @@ namespace blog;
 
 require_once __DIR__ . '/../domain/CategoryRepo.php';
 require_once __DIR__ . '/../domain/OptionsRepo.php';
-require_once __DIR__ . '/BlogInfoDTO.php';
+require_once __DIR__ . '/dto/BlogInfoDTO.php';
 
 class IndexController {
 
@@ -24,7 +24,7 @@ class IndexController {
     foreach ($categories as $c) {
       $categoriesDto[] = new CategoryDTO(
         $c->id,
-        $c-name
+        $c->name
       );
     }
         
