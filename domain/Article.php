@@ -9,9 +9,14 @@ class Article {
     public $body;
     public $timestamp;
     
-    public $categoryId;
-    
+    public $category;    
     public $author;         
+}
+
+class ArticleCategory {
+  
+    public $id;
+    public $name;
 }
 
 class ArticleAuthor {

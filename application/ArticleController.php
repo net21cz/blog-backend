@@ -4,6 +4,7 @@ namespace blog\articles;
 require_once __DIR__ . '/../domain/ArticleRepo.php';
 require_once __DIR__ . '/dto/ArticleDetailDTO.php';
 require_once __DIR__ . '/dto/ArticleItemDTO.php';
+require_once __DIR__ . '/dto/CategoryDTO.php';
 require_once __DIR__ . '/dto/AuthorDTO.php';
 
 class ArticleController {
@@ -23,8 +24,11 @@ class ArticleController {
       $article->summary,
       $article->body,
       $article->timestamp,
-      $article->categoryId,
       
+      new CategoryDTO(
+        $article->category->id,
+        $article->category->name
+      ),      
       new AuthorDTO(
         $article->author->id,
         $article->author->name,
@@ -57,8 +61,11 @@ class ArticleController {
         $article->title,
         $article->summary,
         $article->timestamp,
-        $article->categoryId,
         
+        new CategoryDTO(
+          $article->category->id,
+          $article->category->name
+        ),         
         new AuthorDTO(
           $article->author->id,
           $article->author->name,

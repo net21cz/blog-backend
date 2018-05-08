@@ -7,15 +7,15 @@ class ArticleItemDTO {
   public $title;
   public $summary;
   public $createdAt;
-  public $categoryId;
+  public $category;
   public $author;
 
-  public function __construct($id, $title, $summary, $createdAt, $categoryId, $author) {
+  public function __construct($id, $title, $summary, $createdAt, $category, $author) {
     $this->id = $id;
     $this->title = $title;
     $this->summary = $summary;    
     $this->createdAt = $createdAt;
-    $this->categoryId = $categoryId;
+    $this->category = $category;
     $this->author = $author;
   }
 }

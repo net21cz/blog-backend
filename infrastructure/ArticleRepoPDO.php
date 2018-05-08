@@ -11,6 +11,7 @@ class ArticleRepoPDO implements ArticleRepo {
     private $conn;
     
     private $articles_table = "serendipity_entries";
+    private $categories_table = "serendipity_category";
     private $articles_categories_table = "serendipity_entrycat";
     private $authors_table = "serendipity_authors";
   
@@ -19,9 +20,12 @@ class ArticleRepoPDO implements ArticleRepo {
     }        
     
     public function fetchOne($articleId) {
-        $q = "SELECT a.id, a.title, a.body summary, a.extended text, a.timestamp, ac.categoryId, au.authorId, au.realname authorName, au.email authorEmail
+        $q = "SELECT a.id, a.title, a.body summary, a.extended text, a.timestamp, 
+                  c.categoryId, c.category_name categoryName, 
+                  au.authorId, au.realname authorName, au.email authorEmail
                 FROM {$this->articles_table} a
                     LEFT JOIN {$this->articles_categories_table} ac ON a.id = ac.entryid
+                    LEFT JOIN {$this->categories_table} c ON c.categoryId = ac.categoryId
                     LEFT JOIN {$this->authors_table} au ON a.authorid = au.authorid
                 WHERE a.id = :id ";
                         
@@ -39,7 +43,10 @@ class ArticleRepoPDO implements ArticleRepo {
           $article->summary = $row['summary'];
           $article->body = $row['text'];
           $article->timestamp = $row['timestamp'];
-          $article->categoryId = (int)$row['categoryId'];
+          
+          $article->category = new ArticleCategory();
+          $article->category->id = (int)$row['categoryId'];
+          $article->category->name = $row['categoryName'];
           
           $article->author = new ArticleAuthor();
           $article->author->id = (int)$row['authorId'];
@@ -51,9 +58,12 @@ class ArticleRepoPDO implements ArticleRepo {
     }
     
     function fetchAll($categoryId = null, $authorId = null, $start = 0, $limit = 10) {   
-        $q = "SELECT a.id, a.title, a.body summary, a.timestamp, ac.categoryId, au.authorId, au.realname authorName, au.email authorEmail
+        $q = "SELECT a.id, a.title, a.body summary, a.timestamp, 
+                  c.categoryId, c.category_name categoryName,
+                  au.authorId, au.realname authorName, au.email authorEmail
                 FROM {$this->articles_table} a
                     LEFT JOIN {$this->articles_categories_table} ac ON a.id = ac.entryid
+                    LEFT JOIN {$this->categories_table} c ON c.categoryId = ac.categoryId
                     LEFT JOIN {$this->authors_table} au ON a.authorid = au.authorid
                 WHERE 1=1 ";
                 
@@ -88,7 +98,10 @@ class ArticleRepoPDO implements ArticleRepo {
           $article->title = $row['title'];
           $article->summary = $row['summary'];
           $article->timestamp = $row['timestamp'];
-          $article->categoryId = (int)$row['categoryId'];
+          
+          $article->category = new ArticleCategory();
+          $article->category->id = (int)$row['categoryId'];
+          $article->category->name = $row['categoryName'];
           
           $article->author = new ArticleAuthor();
           $article->author->id = (int)$row['authorId'];
