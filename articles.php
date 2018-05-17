@@ -81,7 +81,7 @@ function viewCollection($articles) {
   if ($previous >= 0) {
     $view['links'][] = array(
       'rel' => 'previous',
-      'href' => $baseUri . ($previous > 0 ? addQueryParam($serverQuery, 'page', $previous) : $serverQuery)
+      'href' => $baseUri . ($previous > 0 ? addQueryParam($serverQuery, 'page', $previous) : removeQueryParam($serverQuery, 'page'))
     );    
   }
   if ($next <= $last) {
@@ -92,11 +92,11 @@ function viewCollection($articles) {
   }
   $view['links'][] = array(
     'rel' => 'first',
-    'href' => $baseUri . $serverQuery
+    'href' => $baseUri . removeQueryParam($serverQuery, 'page')
   );
   $view['links'][] = array(
     'rel' => 'last',
-    'href' => $baseUri . ($last > 0 ? addQueryParam($serverQuery, 'page', $last) : $serverQuery)
+    'href' => $baseUri . ($last > 0 ? addQueryParam($serverQuery, 'page', $last) : removeQueryParam($serverQuery, 'page'))
   );
   
   echo json_encode($view);
@@ -112,4 +112,14 @@ function addQueryParam($queryString, $paramName, $paramValue) {
     $queryString .= '&' . $replacement;
   }
   return $queryString;
+}
+
+function removeQueryParam($queryString, $paramName) {
+  $queryString = preg_replace('/' . $paramName . '=(\w+)/i', '', $queryString);
+  
+  $len = strlen($queryString);
+  if (strpos($queryString, '?') === $len - 1) {
+    $queryString = substr($queryString, 0, $len - 2);
+  }
+  return str_replace('?&', '?', $queryString);
 }
