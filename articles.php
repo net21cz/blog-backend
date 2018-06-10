@@ -121,5 +121,8 @@ function removeQueryParam($queryString, $paramName) {
   if (strpos($queryString, '?') === $len - 1) {
     $queryString = substr($queryString, 0, $len - 2);
   }
+  if (strpos($queryString, '&') === $len - 1) {
+    $queryString = substr($queryString, 0, $len - 1);
+  }
   return str_replace('?&', '?', $queryString);
 }
