@@ -119,7 +119,7 @@ class ArticleRepoPDO implements ArticleRepo {
                 FROM {$this->articles_table} a
                     LEFT JOIN {$this->articles_categories_table} ac ON a.id = ac.entryid
                     LEFT JOIN {$this->authors_table} au ON a.authorid = au.authorid
-                WHERE 1=1 ";
+                WHERE isDraft = 'false' ";
                 
         $params = array();
 
