@@ -65,7 +65,7 @@ class ArticleRepoPDO implements ArticleRepo {
                     LEFT JOIN {$this->articles_categories_table} ac ON a.id = ac.entryid
                     LEFT JOIN {$this->categories_table} c ON c.categoryId = ac.categoryId
                     LEFT JOIN {$this->authors_table} au ON a.authorid = au.authorid
-                WHERE 1=1 ";
+                WHERE isDraft = 'false' ";
                 
         $params = array('start' => (int)$start, 'limit' => (int)$limit);
 
