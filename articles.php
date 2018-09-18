@@ -21,15 +21,19 @@ switch ($_SERVER['REQUEST_METHOD']) {
   case 'GET':
     if (isset($_GET['id'])) {
       $article = $controller->detailRequest($_GET['id']);
-      viewDetail($article);    
+      if (!empty($article)) {
+        viewDetail($article);
+      } else {
+        http_response_code(404);
+      }          
       
     } else {
       $articles = $controller->listRequest($_GET);
       
-      if (empty($articles['data']) && $articles['count'] > 0) {
-        http_response_code(404);      
-      } else {
+      if (!empty($articles['data']) && $articles['count'] > 0) {
         viewCollection($articles);
+      } else {
+        http_response_code(404);
       }
     }
     break;                           
