@@ -20,7 +20,7 @@ $controller = new ArticleController($repo);
 
 switch ($_SERVER['REQUEST_METHOD']) {  
   case 'GET':
-    if (isset($_GET['id'])) {
+    if (!empty($_GET['id'])) {
       $article = $controller->detailRequest($_GET['id']);
       if (!empty($article)) {
         viewDetail($article);

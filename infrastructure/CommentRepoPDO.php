@@ -35,7 +35,7 @@ class CommentRepoPDO implements CommentRepo {
           $comment->timestamp = $row['timestamp'];
           $comment->articleId = (int)$row['articleId'];
         }
-             
+     
         return $comment;
     }
     
@@ -45,9 +45,9 @@ class CommentRepoPDO implements CommentRepo {
                 WHERE c.entry_id = :articleId 
                 ORDER BY c.timestamp DESC, c.id DESC
                 LIMIT 0,:limit ";
-                                              
+                                      
         $stmt = $this->conn->prepare($q);        
-        $stmt->bindValue('id', (int)$commentId, PDO::PARAM_INT);        
+        $stmt->bindValue('articleId', (int)$articleId, PDO::PARAM_INT);        
         $stmt->bindValue('limit', (int)$limit, PDO::PARAM_INT);
         $stmt->execute();
         
@@ -63,7 +63,22 @@ class CommentRepoPDO implements CommentRepo {
           
           array_push($comments, $comment);
         }
-             
+    
         return $comments;
+    }
+    
+    public function add($body, $articleId) {
+        $q = "INSERT INTO {$this->comments_table} (id, entry_id, timestamp, body)
+                VALUES (0, :articleId, :timestamp, :body)";
+                        
+        $stmt = $this->conn->prepare($q);               
+        $stmt->bindValue('articleId', (int)$articleId, PDO::PARAM_INT);
+        $stmt->bindValue('timestamp', time(), PDO::PARAM_INT);
+        $stmt->bindValue('body', $body, PDO::PARAM_STR);        
+        $stmt->execute(); 
+        
+        $id = $this->conn->lastInsertId();  
+               
+        return $id;
     }
 }

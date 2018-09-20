@@ -1,10 +1,15 @@
 <?php
 namespace blog\comments;
 
+if ($_SERVER['REMOTE_ADDR'] !== 'x.x.x.x') {
+  http_response_code(403);
+  die('Unauthorized access.');
+}
+
 use db;
 
 header("Access-Control-Allow-Origin: http://blog.net21.cz");
-header("Access-Control-Allow-Methods: GET");
+header("Access-Control-Allow-Methods: GET,POST");
 header("Content-Type: application/json; charset=UTF-8");
 
 require_once __DIR__ . '/config/db.config.php';
@@ -20,9 +25,9 @@ $controller = new CommentController($repo);
 
 switch ($_SERVER['REQUEST_METHOD']) {  
   case 'GET':
-    if (isset($_GET['id'])) {      
+    if (!empty($_GET['id'])) {      
       $comment = $controller->detailRequest($_GET['id']);
-      if (!empty($comments)) {
+      if (!empty($comment)) {
         viewDetail($comment);      
       } else {
         http_response_code(404);
@@ -32,12 +37,24 @@ switch ($_SERVER['REQUEST_METHOD']) {
       $comments = $controller->listRequest($_GET);
       
       if (!empty($comments)) {
-        viewCollection($articles);
+        viewCollection($comments);
       } else {
         http_response_code(404);
       }
     }
     break;                           
+
+  case 'POST':
+    if (!empty($_POST['body']) && !empty($_POST['articleId'])) {
+      $commentId = $controller->addRequest($_POST);
+      
+      http_response_code(201);
+      header("Location: {$_SERVER['REQUEST_URI']}/{$commentId}");
+      
+    } else {
+      http_response_code(400);
+    }
+    break;
   
   case 'OPTIONS':
     header('Allow: GET OPTIONS');
@@ -48,11 +65,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
     header('Allow: GET OPTIONS');
 }
 
-function viewDetail($article) {
+function viewDetail($comment) {
   $view = array(
     'version' => '1.0',
     'href' => $_SERVER['REQUEST_URI'],
-    'data' => $article    
+    'data' => $comment    
   );
   echo json_encode($view);
 }

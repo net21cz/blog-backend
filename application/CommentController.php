@@ -41,6 +41,15 @@ class CommentController {
     
     return $commentsDto;
   }
+
+  public function addRequest($params) {
+    $body = $params['body'];
+    $articleId = $params['articleId'];
+    
+    $id = $this->repo->add($body, (int)$articleId);
+    
+    return $id;
+  }
   
   private function getIfSet($params, $var, $def = null) {
     return isset($params[$var]) ? $params[$var] : $def;
