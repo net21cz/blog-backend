@@ -4,3 +4,6 @@ RewriteEngine On
 
 RewriteRule ^articles$ articles.php [NC,L]
 RewriteRule ^articles/([0-9]+)$ articles.php?id=$1 [NC,L]
+
+RewriteRule ^comments$ comments.php [NC,L]
+RewriteRule ^comments/([0-9]+)$ comments.php?id=$1 [NC,L]
