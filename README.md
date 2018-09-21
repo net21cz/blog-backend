@@ -2,7 +2,8 @@
 
 ## Installation
 
-Change credentials in `config/db.config.php`
+- Change settings in `config/app.config.php`
+- Change credentials in `config/db.config.php`
 
 ## Usage
 
@@ -17,4 +18,14 @@ curl http://localhost/articles?categoryId=123&authorId=123
 ### Get a Detail of an Article
 ```
 curl http://localhost/articles/123
+```
+
+### Get a List of Comments
+```
+curl http://localhost/comments?articleId=123
+```
+
+### Get a Detail of an Comment
+```
+curl http://localhost/comments/123
 ```
