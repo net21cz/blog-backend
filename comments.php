@@ -1,21 +1,22 @@
 <?php
 namespace blog\comments;
 
-if ($_SERVER['REMOTE_ADDR'] !== 'x.x.x.x') {
-  http_response_code(403);
-  die('Unauthorized access.');
-}
-
 use db;
 
 header("Access-Control-Allow-Origin: http://blog.net21.cz");
 header("Access-Control-Allow-Methods: GET,POST");
 header("Content-Type: application/json; charset=UTF-8");
 
+require_once __DIR__ . '/config/app.config.php';
 require_once __DIR__ . '/config/db.config.php';
 require_once __DIR__ . '/application/CommentController.php';
 require_once __DIR__ . '/infrastructure/CommentRepoPDO.php';
 require_once __DIR__ . '/infrastructure/db/DatabaseFactory.php';
+
+if ($_SERVER['REMOTE_ADDR'] !== REFERRER_ADDR_ALLOWED) {
+  http_response_code(403);
+  die('{"error":"Unauthorized access."}');
+}
 
 $db = db\DatabaseFactory::getDatabase(DB_TYPE, DB_HOST, DB_NAME, DB_USER, DB_PASS);
 
