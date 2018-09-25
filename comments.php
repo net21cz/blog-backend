@@ -9,14 +9,15 @@ header("Content-Type: application/json; charset=UTF-8");
 
 require_once __DIR__ . '/config/app.config.php';
 require_once __DIR__ . '/config/db.config.php';
-require_once __DIR__ . '/application/CommentController.php';
-require_once __DIR__ . '/infrastructure/CommentRepoPDO.php';
-require_once __DIR__ . '/infrastructure/db/DatabaseFactory.php';
 
 if ($_SERVER['REMOTE_ADDR'] !== REFERRER_ADDR_ALLOWED) {
   http_response_code(403);
   die('{"error":"Unauthorized access."}');
 }
+
+require_once __DIR__ . '/application/CommentController.php';
+require_once __DIR__ . '/infrastructure/CommentRepoPDO.php';
+require_once __DIR__ . '/infrastructure/db/DatabaseFactory.php';
 
 $db = db\DatabaseFactory::getDatabase(DB_TYPE, DB_HOST, DB_NAME, DB_USER, DB_PASS);
 

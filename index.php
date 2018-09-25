@@ -7,7 +7,14 @@ header("Access-Control-Allow-Origin: http://blog.net21.cz");
 header("Access-Control-Allow-Methods: GET");
 header("Content-Type: application/json; charset=UTF-8");
 
+require_once __DIR__ . '/config/app.config.php';
 require_once __DIR__ . '/config/db.config.php';
+
+if ($_SERVER['REMOTE_ADDR'] !== REFERRER_ADDR_ALLOWED) {
+  http_response_code(403);
+  die('{"error":"Unauthorized access."}');
+}
+
 require_once __DIR__ . '/application/IndexController.php';
 require_once __DIR__ . '/infrastructure/OptionsRepoPDO.php';
 require_once __DIR__ . '/infrastructure/CategoryRepoPDO.php';
