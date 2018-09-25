@@ -29,13 +29,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
       }          
       
     } else {
-      $articles = $controller->listRequest($_GET);
-      
-      if (!empty($articles['data']) && $articles['count'] > 0) {
-        viewCollection($articles);
-      } else {
-        http_response_code(404);
-      }
+      $articles = $controller->listRequest($_GET);      
+      viewCollection($articles);
     }
     break;                           
   

@@ -35,13 +35,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
       }
       
     } else {
-      $comments = $controller->listRequest($_GET);
-      
-      if (!empty($comments)) {
-        viewCollection($comments);
-      } else {
-        http_response_code(404);
-      }
+      $comments = $controller->listRequest($_GET);      
+      viewCollection($comments);      
     }
     break;                           
 
