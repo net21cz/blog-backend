@@ -10,7 +10,7 @@ header("Content-Type: application/json; charset=UTF-8");
 require_once __DIR__ . '/config/app.config.php';
 require_once __DIR__ . '/config/db.config.php';
 
-if ($_SERVER['REMOTE_ADDR'] !== REFERRER_ADDR_ALLOWED) {
+if ($_REQUEST['secret'] !== SECRET_KEY) {
   http_response_code(403);
   die('{"error":"Unauthorized access."}');
 }
@@ -27,15 +27,16 @@ $controller = new ArticleController($repo);
 
 switch ($_SERVER['REQUEST_METHOD']) {  
   case 'GET':
-    if (!empty($_GET['id'])) {
-      $article = $controller->detailRequest($_GET['id']);
+    $id = parseIdFromPath($_SERVER['REQUEST_URI']);
+    if (!empty($id)) {
+      $article = $controller->detailRequest($id);
       if (!empty($article)) {
         viewDetail($article);
       } else {
         http_response_code(404);
       }          
       
-    } else {
+    } else { 
       $articles = $controller->listRequest($_GET);      
       viewCollection($articles);
     }
@@ -53,7 +54,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 function viewDetail($article) {
   $view = array(
     'version' => '1.0',
-    'href' => $_SERVER['REQUEST_URI'],
+    'href' => removeSecretQuery($_SERVER['REQUEST_URI']),
     'data' => $article    
   );
   echo json_encode($view);
@@ -62,13 +63,13 @@ function viewDetail($article) {
 function viewCollection($articles) {
   $view = array(
     'version' => '1.0',
-    'href' => $_SERVER['REQUEST_URI'],
+    'href' => removeSecretQuery($_SERVER['REQUEST_URI']),
     'articles' => array(),
     'links' => array()    
   );  
   
   $serverQuery = !empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '';  
-  $serverUri = str_replace($serverQuery, '', $_SERVER['REQUEST_URI']);
+  $serverUri = removeSecretQuery(str_replace($serverQuery, '', $_SERVER['REQUEST_URI']));
   $pagePos = strpos($serverUri, '/page');
   $baseUri = $pagePos ? substr($serverUri, 0, $pagePos) : $serverUri;
   
@@ -132,4 +133,26 @@ function removeQueryParam($queryString, $paramName) {
     $queryString = substr($queryString, 0, $len - 1);
   }
   return str_replace('?&', '?', $queryString);
+}
+
+function parseIdFromPath($path) {
+  $path = !empty($path) && $path[strlen($path) - 1] == '/' ? substr($path, 0, strlen($path) - 1) : $path;
+  if (empty($path)) {
+    return array();
+  }
+  $queryPos = strpos($path, '?');
+  if ($queryPos !== FALSE) {
+    $path = substr($path, 0, $queryPos);
+  }
+  $parts = explode('/', $path[0] == '/' ? substr($path, 1) : $path);
+  $lastPart = $parts[sizeof($parts) - 1];
+  return $lastPart != 'articles' ? $lastPart : null;
+}
+
+function removeSecretQuery($url) {
+  $pattern = '/(secret=[a-zA-Z0-9]+)/i';
+  $url = preg_replace($pattern, '', $url);
+  $url = str_replace('&&', '', $url);
+  $lastChar = $url[strlen($url) - 1];
+  return $lastChar == '?' || $lastChar == '&' ? substr($url, 0, strlen($url) - 1) : $url;
 }

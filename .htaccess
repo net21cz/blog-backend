@@ -3,7 +3,10 @@ php_value register_globals off
 RewriteEngine On
 
 RewriteRule ^articles$ articles.php [NC,L]
-RewriteRule ^articles/([0-9]+)$ articles.php?id=$1 [NC,L]
+RewriteRule ^articles/([0-9]+)$ articles.php [NC,L]
 
 RewriteRule ^comments$ comments.php [NC,L]
 RewriteRule ^comments/([0-9]+)$ comments.php?id=$1 [NC,L]
+
+# App settings
+SetEnv SECRET_KEY yKnWnTjOiyoOv9WmVRbyTQ1gIMTp5cc12coaPKjvLYA77wMMplqamd011i6q3Uo

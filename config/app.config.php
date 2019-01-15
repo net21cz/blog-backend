@@ -1,2 +1,2 @@
 <?php
-define('REFERRER_ADDR_ALLOWED', 'x.x.x.x');
+define('SECRET_KEY', getenv('SECRET_KEY'));
