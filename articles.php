@@ -10,7 +10,7 @@ header("Content-Type: application/json; charset=UTF-8");
 require_once __DIR__ . '/config/app.config.php';
 require_once __DIR__ . '/config/db.config.php';
 
-if ($_REQUEST['secret'] !== SECRET_KEY) {
+if ($_SERVER['HTTP_API_KEY'] !== SECRET_KEY) {
   http_response_code(403);
   die('{"error":"Unauthorized access."}');
 }
@@ -30,7 +30,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
     $id = parseIdFromPath($_SERVER['REQUEST_URI']);
     if (!empty($id)) {
       $article = $controller->detailRequest($id);
-      if (!empty($article)) {
+      if (!empty($article) && !empty($article->id)) {
         viewDetail($article);
       } else {
         http_response_code(404);
@@ -54,7 +54,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 function viewDetail($article) {
   $view = array(
     'version' => '1.0',
-    'href' => removeSecretQuery($_SERVER['REQUEST_URI']),
+    'href' => $_SERVER['REQUEST_URI'],
     'data' => $article    
   );
   echo json_encode($view);
@@ -63,13 +63,13 @@ function viewDetail($article) {
 function viewCollection($articles) {
   $view = array(
     'version' => '1.0',
-    'href' => removeSecretQuery($_SERVER['REQUEST_URI']),
+    'href' => $_SERVER['REQUEST_URI'],
     'articles' => array(),
     'links' => array()    
   );  
   
   $serverQuery = !empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '';  
-  $serverUri = removeSecretQuery(str_replace($serverQuery, '', $_SERVER['REQUEST_URI']));
+  $serverUri = str_replace($serverQuery, '', $_SERVER['REQUEST_URI']);
   $pagePos = strpos($serverUri, '/page');
   $baseUri = $pagePos ? substr($serverUri, 0, $pagePos) : $serverUri;
   
@@ -147,12 +147,4 @@ function parseIdFromPath($path) {
   $parts = explode('/', $path[0] == '/' ? substr($path, 1) : $path);
   $lastPart = $parts[sizeof($parts) - 1];
   return $lastPart != 'articles' ? $lastPart : null;
-}
-
-function removeSecretQuery($url) {
-  $pattern = '/(secret=[a-zA-Z0-9]+)/i';
-  $url = preg_replace($pattern, '', $url);
-  $url = str_replace('&&', '', $url);
-  $lastChar = $url[strlen($url) - 1];
-  return $lastChar == '?' || $lastChar == '&' ? substr($url, 0, strlen($url) - 1) : $url;
 }

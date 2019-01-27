@@ -10,7 +10,7 @@ header("Content-Type: application/json; charset=UTF-8");
 require_once __DIR__ . '/config/app.config.php';
 require_once __DIR__ . '/config/db.config.php';
 
-if ($_REQUEST['secret'] !== SECRET_KEY) {
+if ($_SERVER['HTTP_API_KEY'] !== SECRET_KEY) {
   http_response_code(403);
   die('{"error":"Unauthorized access."}');
 } 
@@ -47,7 +47,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 function view($bloginfo) {
   $view = array(
     'version' => '1.0',
-    'href' => removeSecretQuery($_SERVER['REQUEST_URI']),
+    'href' => $_SERVER['REQUEST_URI'],
     'title' => $bloginfo->title,
     'description' => $bloginfo->description,
     'categories' => array(),
@@ -72,16 +72,8 @@ function view($bloginfo) {
   
   $view['links'][] = array(
     'rel' => 'articles',
-    'href' => removeSecretQuery($_SERVER['REQUEST_URI']) . 'articles'
+    'href' => $_SERVER['REQUEST_URI'] . 'articles'
   ); 
   
   echo json_encode($view);
 }   
-
-function removeSecretQuery($url) {
-  $pattern = '/(secret=[a-zA-Z0-9]+)/i';
-  $url = preg_replace($pattern, '', $url);
-  $url = str_replace('&&', '', $url);
-  $lastChar = $url[strlen($url) - 1];
-  return $lastChar == '?' || $lastChar == '&' ? substr($url, 0, strlen($url) - 1) : $url;
-}

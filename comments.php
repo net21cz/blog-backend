@@ -10,7 +10,7 @@ header("Content-Type: application/json; charset=UTF-8");
 require_once __DIR__ . '/config/app.config.php';
 require_once __DIR__ . '/config/db.config.php';
 
-if ($_REQUEST['secret'] !== SECRET_KEY) {
+if ($_SERVER['HTTP_API_KEY'] !== SECRET_KEY) {
   http_response_code(403);
   die('{"error":"Unauthorized access."}');
 }
@@ -29,7 +29,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
   case 'GET':
     if (!empty($_GET['id'])) {      
       $comment = $controller->detailRequest($_GET['id']);
-      if (!empty($comment)) {
+      if (!empty($comment) && !empty($comment->id)) {
         viewDetail($comment);      
       } else {
         http_response_code(404);
@@ -65,7 +65,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 function viewDetail($comment) {
   $view = array(
     'version' => '1.0',
-    'href' => removeSecretQuery($_SERVER['REQUEST_URI']),
+    'href' => $_SERVER['REQUEST_URI'],
     'data' => $comment    
   );
   echo json_encode($view);
@@ -74,16 +74,8 @@ function viewDetail($comment) {
 function viewCollection($comments) {
   $view = array(
     'version' => '1.0',
-    'href' => removeSecretQuery($_SERVER['REQUEST_URI']),
+    'href' => $_SERVER['REQUEST_URI'],
     'comments' => $comments 
   );
   echo json_encode($view);
-}
-
-function removeSecretQuery($url) {
-  $pattern = '/(secret=[a-zA-Z0-9]+)/i';
-  $url = preg_replace($pattern, '', $url);
-  $url = str_replace('&&', '', $url);
-  $lastChar = $url[strlen($url) - 1];
-  return $lastChar == '?' || $lastChar == '&' ? substr($url, 0, strlen($url) - 1) : $url;
 }
