@@ -17,7 +17,7 @@ class CommentRepoPDO implements CommentRepo {
     }        
     
     public function fetchAll($articleId, $start = 0, $limit = 10) {   
-        $q = "SELECT c.id, c.body, c.timestamp
+        $q = "SELECT c.id, c.author, c.body, c.timestamp
                 FROM {$this->comments_table} c
                 WHERE c.entry_id = :articleId AND (c.parent_id = 0 OR c.parent_id IS NULL)
                 ORDER BY c.timestamp DESC, c.id DESC
@@ -35,6 +35,7 @@ class CommentRepoPDO implements CommentRepo {
           $comment = new Comment();
           
           $comment->id = (int)$row['id'];
+          $comment->author = $row['author'];
           $comment->body = $row['body'];
           $comment->timestamp = $row['timestamp'];
           $comment->articleId = (int)$articleId;
