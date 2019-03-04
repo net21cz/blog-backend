@@ -5,7 +5,9 @@ interface CommentRepo {
  
     public function fetchAll($articleId, $limit);
     
-    public function fetchOne($commentId);
+    public function count($articleId, $commentId);
     
-    public function add($body, $articleId);
+    public function answers($commentId, $start, $limit);
+    
+    public function add($author, $body, $articleId, $commentId);
 }

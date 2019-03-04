@@ -11,42 +11,70 @@ class CommentController {
   public function __construct(CommentRepo $repo){                                           
     $this->repo = $repo;
   }
-
-  public function detailRequest($id) {
-    $comment = $this->repo->fetchOne((int)$id);
-    
-    return new CommentDTO(
-      $comment->id,
-      $comment->body,
-      $comment->timestamp,
-      $comment->articleId
-    );
-  }
   
-  public function listRequest($params) {
-    $articleId = $this->getIfSet($params, 'articleId');   
-    
-    $comments = $this->repo->fetchAll((int)$articleId);
+  private $limit = 3;
+  
+  public function listRequest($articleId, $page = 0) {
+    $comments = $this->repo->fetchAll((int)$articleId, $page * $this->limit, $this->limit);
     
     $commentsDto = array();
 
     foreach ($comments as $comment) {
+      $answersDto = array();
+
+      foreach ($comment->answers as $answer) {
+        $answersDto[] = new AnswerDTO(
+          $answer->id,
+          $answer->author,
+          $answer->body,
+          $answer->timestamp
+        );
+      }
+      
+      $count = $this->repo->count(null, $comment->id);
+      
       $commentsDto[] = new CommentDTO(
         $comment->id,
+        $comment->author,
         $comment->body,
         $comment->timestamp,
-        $comment->articleId
+        $answersDto,
+        $this->limit < $count ? 1 : null
       );
     }
     
-    return $commentsDto;
+    $count = $this->repo->count((int)$articleId);
+    
+    return array('comments' => $commentsDto, 'next' => (($page + 1) * $this->limit) < $count ? $page + 1 : null);
+  }
+  
+  public function answersRequest($commentId, $page = 0) {
+    $answers = $this->repo->answers((int)$commentId, $page * $this->limit, $this->limit);
+    
+    $answersDto = array();
+
+    foreach ($answers as $answer) {
+          
+      $answersDto[] = new AnswerDTO(
+        $answer->id,
+        $answer->author,
+        $answer->body,
+        $answer->timestamp
+      );
+    }
+    
+    $count = $this->repo->count(null, $commentId);
+    
+    return array('answers' => $answersDto, 'next' => (($page + 1) * $this->limit) < $count ? $page + 1 : null);
   }
 
   public function addRequest($params) {
+    $author = $params['author'];
     $body = $params['body'];
     $articleId = $params['articleId'];
+    $commentId = $params['commentId'];
     
-    $id = $this->repo->add($body, (int)$articleId);
+    $id = $this->repo->add($author, $body, (int)$articleId, (int)$commentId);
     
     return $id;
   }

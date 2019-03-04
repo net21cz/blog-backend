@@ -138,9 +138,7 @@ class ArticleRepoPDO implements ArticleRepo {
             $stmt->bindValue($param, $value, PDO::PARAM_INT);
         }
         
-        $stmt->execute();
-        
-        $articles = array();  
+        $stmt->execute();  
                
         if ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
           

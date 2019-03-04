@@ -27,26 +27,25 @@ $controller = new CommentController($repo);
 
 switch ($_SERVER['REQUEST_METHOD']) {  
   case 'GET':
-    if (!empty($_GET['id'])) {      
-      $comment = $controller->detailRequest($_GET['id']);
-      if (!empty($comment) && !empty($comment->id)) {
-        viewDetail($comment);      
-      } else {
-        http_response_code(404);
-      }
-      
+    $articleId = parseArticleIdFromPath($_SERVER['REQUEST_URI']);
+    if (!empty($articleId)) {
+      $commentId = parseCommentIdFromPath($_SERVER['REQUEST_URI']);
+      if (!empty($commentId)) {
+        $result = $controller->answersRequest($commentId, (int)$_GET['page']);
+        viewAnswers($result);
+      } else {            
+        $result = $controller->listRequest($articleId, (int)$_GET['page']);
+        viewComments($result);
+      }            
     } else {
-      $comments = $controller->listRequest($_GET);      
-      viewCollection($comments);      
+      http_response_code(400);
     }
     break;                           
 
   case 'POST':
-    if (!empty($_POST['body']) && !empty($_POST['articleId'])) {
-      $commentId = $controller->addRequest($_POST);
-      
+    if (!empty($_POST['author']) && !empty($_POST['body']) && !empty($_POST['articleId'])) {
+      $controller->addRequest($_POST);      
       http_response_code(201);
-      header("Location: {$_SERVER['REQUEST_URI']}/{$commentId}");
       
     } else {
       http_response_code(400);
@@ -54,28 +53,84 @@ switch ($_SERVER['REQUEST_METHOD']) {
     break;
   
   case 'OPTIONS':
-    header('Allow: GET OPTIONS');
+    header('Allow: GET POST OPTIONS');
     break;
           
   default:
     http_response_code(405);
-    header('Allow: GET OPTIONS');
+    header('Allow: GET POST OPTIONS');
 }
 
-function viewDetail($comment) {
-  $view = array(
-    'version' => '1.0',
-    'href' => $_SERVER['REQUEST_URI'],
-    'data' => $comment    
-  );
-  echo json_encode($view);
-}
-
-function viewCollection($comments) {
+function viewComments($result, $next = null) {  
+  $serverUri = str_replace(!empty($_SERVER['QUERY_STRING']) ? "?{$_SERVER['QUERY_STRING']}" : '', '', $_SERVER['REQUEST_URI']);
+  
+  $comments = array();  
+  foreach ($result['comments'] as $comment) {
+     $comment->next = !empty($comment->next) ? "{$serverUri}/{$comment->id}?page={$comment->next}" : null;
+     $comments[] = $comment;
+  }
+    
   $view = array(
     'version' => '1.0',
     'href' => $_SERVER['REQUEST_URI'],
     'comments' => $comments 
   );
+  if (!empty($result['next'])) {
+    $view['next'] = $serverUri . '?page=' . $result['next'];
+  }
   echo json_encode($view);
+}
+
+function viewAnswers($result, $next = null) {  
+  $serverUri = str_replace(!empty($_SERVER['QUERY_STRING']) ? "?{$_SERVER['QUERY_STRING']}" : '', '', $_SERVER['REQUEST_URI']);
+      
+  $view = array(
+    'version' => '1.0',
+    'href' => $_SERVER['REQUEST_URI'],
+    'comments' => $result['answers'] 
+  );
+  if (!empty($result['next'])) {
+    $view['next'] = $serverUri . '?page=' . $result['next'];
+  }
+  echo json_encode($view);
+}
+
+function addQueryParam($queryString, $paramName, $paramValue) {
+  $replacement = $paramName . '=' . urlencode($paramValue);
+  if (empty($queryString)) {
+    return '?' . $replacement;
+  }
+  $queryString = preg_replace('/' . $paramName . '=(\w+)/i', $replacement, $queryString);
+  if (!strpos($queryString, $replacement)) {
+    $queryString .= '&' . $replacement;
+  }
+  return $queryString;
+}
+
+function parseArticleIdFromPath($path) {
+  $path = !empty($path) && $path[strlen($path) - 1] == '/' ? substr($path, 0, strlen($path) - 1) : $path;
+  if (empty($path)) {
+    return array();
+  }
+  $queryPos = strpos($path, '?');
+  if ($queryPos !== FALSE) {
+    $path = substr($path, 0, $queryPos);
+  }
+  $parts = explode('/', $path[0] == '/' ? substr($path, 1) : $path);
+  $firstParamIndex = array_search('comments', $parts) + 1;
+  return $firstParamIndex < sizeof($parts) ? $parts[$firstParamIndex] : null;
+}
+
+function parseCommentIdFromPath($path) {
+  $path = !empty($path) && $path[strlen($path) - 1] == '/' ? substr($path, 0, strlen($path) - 1) : $path;
+  if (empty($path)) {
+    return array();
+  }
+  $queryPos = strpos($path, '?');
+  if ($queryPos !== FALSE) {
+    $path = substr($path, 0, $queryPos);
+  }
+  $parts = explode('/', $path[0] == '/' ? substr($path, 1) : $path);  
+  $firstParamIndex = array_search('comments', $parts) + 1;
+  return $firstParamIndex + 1 < sizeof($parts) ? $parts[$firstParamIndex + 1] : null;
 }
