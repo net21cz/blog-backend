@@ -43,9 +43,13 @@ switch ($_SERVER['REQUEST_METHOD']) {
     break;                           
 
   case 'POST':
-    if (!empty($_POST['author']) && !empty($_POST['body']) && !empty($_POST['articleId'])) {
-      $controller->addRequest($_POST);      
+    if (!empty($_POST['author']) && !empty($_POST['body'])) {
+      $articleId = parseArticleIdFromPath($_SERVER['REQUEST_URI']);
+      $commentId = parseCommentIdFromPath($_SERVER['REQUEST_URI']);
+      
+      $comment = $controller->addRequest($_POST, $articleId, $commentId);            
       http_response_code(201);
+      echo json_encode($comment);
       
     } else {
       http_response_code(400);

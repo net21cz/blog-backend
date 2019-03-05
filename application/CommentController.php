@@ -68,15 +68,13 @@ class CommentController {
     return array('answers' => $answersDto, 'next' => (($page + 1) * $this->limit) < $count ? $page + 1 : null);
   }
 
-  public function addRequest($params) {
+  public function addRequest($params, $articleId, $commentId = null) {
     $author = $params['author'];
     $body = $params['body'];
-    $articleId = $params['articleId'];
-    $commentId = $params['commentId'];
     
     $id = $this->repo->add($author, $body, (int)$articleId, (int)$commentId);
     
-    return $id;
+    return new BaseCommentDTO($id, $author, $body, time());
   }
   
   private function getIfSet($params, $var, $def = null) {

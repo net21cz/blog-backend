@@ -1,27 +1,7 @@
 <?php
 namespace blog\comments;
 
-class CommentDTO {
-
-  public $id;
-  public $author;
-  public $body;
-  public $createdAt;
-  
-  public $answers;
-  public $next;
-
-  public function __construct($id, $author, $body, $createdAt, $answers, $next) {
-    $this->id = $id;     
-    $this->author = $author;                                      
-    $this->body = $body;
-    $this->createdAt = $createdAt;
-    $this->answers = $answers;
-    $this->next = $next;
-  }
-}
-
-class AnswerDTO {
+class BaseCommentDTO {
 
   public $id;
   public $author;
@@ -33,5 +13,25 @@ class AnswerDTO {
     $this->author = $author;                                       
     $this->body = $body;
     $this->createdAt = $createdAt;
+  }
+}
+
+class CommentDTO extends BaseCommentDTO {
+  
+  public $answers;
+  public $next;
+
+  public function __construct($id, $author, $body, $createdAt, $answers, $next) {
+    parent::__construct($id, $author, $body, $createdAt);
+    
+    $this->answers = $answers;
+    $this->next = $next;
+  }
+}
+
+class AnswerDTO extends BaseCommentDTO {
+
+  public function __construct($id, $author, $body, $createdAt) {
+    parent::__construct($id, $author, $body, $createdAt);
   }
 }
