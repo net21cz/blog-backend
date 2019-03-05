@@ -117,7 +117,7 @@ function parseArticleIdFromPath($path) {
     $path = substr($path, 0, $queryPos);
   }
   $parts = explode('/', $path[0] == '/' ? substr($path, 1) : $path);
-  $firstParamIndex = array_search('comments', $parts) + 1;
+  $firstParamIndex = array_search('articles', $parts) + 1;
   return $firstParamIndex < sizeof($parts) ? $parts[$firstParamIndex] : null;
 }
 
@@ -131,6 +131,6 @@ function parseCommentIdFromPath($path) {
     $path = substr($path, 0, $queryPos);
   }
   $parts = explode('/', $path[0] == '/' ? substr($path, 1) : $path);  
-  $firstParamIndex = array_search('comments', $parts) + 1;
-  return $firstParamIndex + 1 < sizeof($parts) ? $parts[$firstParamIndex + 1] : null;
+  $firstParamIndex = array_search('articles', $parts) + 1;
+  return $firstParamIndex + 2 < sizeof($parts) ? $parts[$firstParamIndex + 2] : null;
 }
