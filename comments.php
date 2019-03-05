@@ -87,7 +87,7 @@ function viewAnswers($result, $next = null) {
   $view = array(
     'version' => '1.0',
     'href' => $_SERVER['REQUEST_URI'],
-    'comments' => $result['answers'] 
+    'answers' => $result['answers'] 
   );
   if (!empty($result['next'])) {
     $view['next'] = $serverUri . '?page=' . $result['next'];
