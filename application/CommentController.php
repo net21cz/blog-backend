@@ -12,7 +12,7 @@ class CommentController {
     $this->repo = $repo;
   }
   
-  private $limit = 3;
+  private $limit = 10;
   
   public function listRequest($articleId, $page = 0) {
     $comments = $this->repo->fetchAll((int)$articleId, $page * $this->limit, $this->limit);
