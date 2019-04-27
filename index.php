@@ -3,7 +3,7 @@ namespace blog;
 
 use db;
 
-header("Access-Control-Allow-Origin: http://blog.net21.cz");
+header("Access-Control-Allow-Origin: " . ORIGIN_URL);
 header("Access-Control-Allow-Methods: GET");
 header("Content-Type: application/json; charset=UTF-8");
 

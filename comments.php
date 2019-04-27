@@ -3,7 +3,7 @@ namespace blog\comments;
 
 use db;
 
-header("Access-Control-Allow-Origin: http://blog.net21.cz");
+header("Access-Control-Allow-Origin: " . ORIGIN_URL);
 header("Access-Control-Allow-Methods: GET,POST");
 header("Content-Type: application/json; charset=UTF-8");
 
